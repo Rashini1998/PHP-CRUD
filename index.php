@@ -1,20 +1,7 @@
 <?php
 
-// Database connection
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "phptest";
+include 'db_connection.php';
 
-// Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-// Insert data
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $usersName = $_POST['name'];
     $usersEmail = $_POST['email'];
@@ -23,20 +10,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $sql = "INSERT INTO users (usersName, usersEmail, usersPhone, usersAddress) VALUES ('$usersName', '$usersEmail', '$usersPhone', '$usersAddress')";
 
-    // if ($conn->query($sql) === FALSE) {
-    //     echo "Error: " . $sql . "<br>" . $conn->error;
-    // }
     if ($conn->query($sql) === TRUE) {
-        // Redirect after successful insert
+     
         header("Location: " . $_SERVER['PHP_SELF']);
-        exit(); // Ensure no further code is executed after redirection
+        exit(); 
     } else {
         echo "Error: " . $sql . "<br>" . $conn->error;
     }
 }
 
-// Retrieve data
-$sql = "SELECT usersName, usersEmail, usersPhone, usersAddress FROM users";
+
+$sql = "SELECT usersId, usersName, usersEmail, usersPhone, usersAddress FROM users";
 $result = $conn->query($sql);
 
 $conn->close();
@@ -47,7 +31,7 @@ $conn->close();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Form</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"/>
 </head>
 <body>
@@ -81,13 +65,20 @@ $conn->close();
                     <th>Email</th>
                     <th>Phone Number</th>
                     <th>Address</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
                 <?php
                 if ($result->num_rows > 0) {
                     while($row = $result->fetch_assoc()) {
-                        echo "<tr><td>" . $row["usersName"] . "</td><td>" . $row["usersEmail"] . "</td><td>" . $row["usersPhone"] . "</td><td>" . $row["usersAddress"] . "</td></tr>";
+                        echo "<tr><td>" . $row["usersName"] . "</td><td>" . $row["usersEmail"] . "</td><td>" . $row["usersPhone"] . "</td><td>" . $row["usersAddress"] . "</td>";
+                        echo "<td>";        
+                        echo "<a href='update.php?id=" . htmlspecialchars($row["usersId"]) . "' class='btn btn-success'>Update</a> ";               
+                        echo "<a href='delete.php?id=" . htmlspecialchars($row["usersId"]) . "' class='btn btn-danger' onclick=\"return confirm('Are you sure you want to delete this item?');\">Delete</a>";
+                        echo "</td>";
+                        echo "</tr>";
+
                     }
                 } else {
                     echo "<tr><td colspan='4'>No records found</td></tr>";

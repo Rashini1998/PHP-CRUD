@@ -1,20 +1,9 @@
 <?php
-// Database connection
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "phptest";
 
-// Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+include 'db_connection.php';
 
 // Retrieve data
-$sql = "SELECT usersName, usersEmail, usersPhone,usersAddress FROM users";
+$sql = "SELECT usersId,usersName, usersEmail, usersPhone,usersAddress FROM users";
 $result = $conn->query($sql);
 
 if ($result->num_rows > 0) {
